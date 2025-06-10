@@ -1,0 +1,321 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 217.2 32.6% 17.5%;
+    --card-foreground: 210 40% 98%;
+    --popover: 217.2 32.6% 17.5%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Improved Dark Theme Styles */
+.dark {
+  /* Main background - dark slate */
+  background-color: rgb(15 23 42); /* slate-900 */
+  --tw-bg-opacity: 1;
+}
+
+.dark .bg-white {
+  --tw-bg-opacity: 1;
+  background-color: rgb(30 41 59 / var(--tw-bg-opacity)); /* slate-700 */
+}
+
+.dark .bg-gray-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(51 65 85 / var(--tw-bg-opacity)); /* slate-600 */
+}
+
+.dark .bg-gray-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(71 85 105 / var(--tw-bg-opacity)); /* slate-500 */
+}
+
+.dark .text-gray-900 {
+  --tw-text-opacity: 1;
+  color: rgb(248 250 252 / var(--tw-text-opacity)); /* slate-50 */
+}
+
+.dark .text-gray-800 {
+  --tw-text-opacity: 1;
+  color: rgb(226 232 240 / var(--tw-text-opacity)); /* slate-200 */
+}
+
+.dark .text-gray-700 {
+  --tw-text-opacity: 1;
+  color: rgb(203 213 225 / var(--tw-text-opacity)); /* slate-300 */
+}
+
+.dark .text-gray-600 {
+  --tw-text-opacity: 1;
+  color: rgb(148 163 184 / var(--tw-text-opacity)); /* slate-400 */
+}
+
+.dark .text-gray-500 {
+  --tw-text-opacity: 1;
+  color: rgb(100 116 139 / var(--tw-text-opacity)); /* slate-500 */
+}
+
+.dark .border-gray-200 {
+  --tw-border-opacity: 1;
+  border-color: rgb(71 85 105 / var(--tw-border-opacity)); /* slate-600 */
+}
+
+.dark .border-gray-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(100 116 139 / var(--tw-border-opacity)); /* slate-500 */
+}
+
+/* Card improvements for dark theme */
+.dark .bg-card {
+  background-color: rgb(30 41 59); /* slate-700 */
+}
+
+.dark .bg-muted {
+  background-color: rgb(51 65 85); /* slate-600 */
+}
+
+.dark .bg-muted\/50 {
+  background-color: rgb(51 65 85 / 0.5); /* slate-600 with opacity */
+}
+
+/* Input and form improvements */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark textarea,
+.dark select {
+  background-color: rgb(51 65 85); /* slate-600 */
+  border-color: rgb(100 116 139); /* slate-500 */
+  color: rgb(248 250 252); /* slate-50 */
+}
+
+.dark input[type="text"]:focus,
+.dark input[type="email"]:focus,
+.dark input[type="password"]:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: rgb(59 130 246); /* blue-500 */
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgb(148 163 184); /* slate-400 */
+}
+
+/* Button improvements */
+.dark .bg-blue-600 {
+  background-color: rgb(37 99 235); /* blue-600 */
+}
+
+.dark .bg-blue-600:hover {
+  background-color: rgb(29 78 216); /* blue-700 */
+}
+
+/* Dropdown and popover improvements */
+.dark [data-radix-popper-content-wrapper] {
+  background-color: rgb(30 41 59); /* slate-700 */
+  border-color: rgb(71 85 105); /* slate-600 */
+}
+
+/* Table improvements */
+.dark table {
+  background-color: rgb(30 41 59); /* slate-700 */
+}
+
+.dark th {
+  background-color: rgb(51 65 85); /* slate-600 */
+  color: rgb(248 250 252); /* slate-50 */
+}
+
+.dark td {
+  border-color: rgb(71 85 105); /* slate-600 */
+  color: rgb(226 232 240); /* slate-200 */
+}
+
+/* Badge improvements */
+.dark .bg-blue-100 {
+  background-color: rgb(30 58 138); /* blue-800 */
+}
+
+.dark .text-blue-800 {
+  color: rgb(147 197 253); /* blue-300 */
+}
+
+.dark .bg-green-100 {
+  background-color: rgb(20 83 45); /* green-800 */
+}
+
+.dark .text-green-800 {
+  color: rgb(134 239 172); /* green-300 */
+}
+
+.dark .bg-yellow-100 {
+  background-color: rgb(133 77 14); /* yellow-800 */
+}
+
+.dark .text-yellow-800 {
+  color: rgb(254 240 138); /* yellow-300 */
+}
+
+.dark .bg-red-100 {
+  background-color: rgb(153 27 27); /* red-800 */
+}
+
+.dark .text-red-800 {
+  color: rgb(252 165 165); /* red-300 */
+}
+
+/* Custom scrollbar styles */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Dark theme scrollbar */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: rgb(51 65 85); /* slate-600 */
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgb(100 116 139); /* slate-500 */
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgb(148 163 184); /* slate-400 */
+}
+
+/* Admin layout transitions */
+#admin-content {
+  transition: margin-left 0.3s ease;
+}
+
+/* Ensure sidebar is always on top */
+.admin-sidebar {
+  z-index: 40;
+}
+
+/* Smooth transitions for all interactive elements */
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Modal and dialog improvements for dark theme */
+.dark [data-radix-dialog-overlay] {
+  background-color: rgb(0 0 0 / 0.8);
+}
+
+.dark [data-radix-dialog-content] {
+  background-color: rgb(30 41 59); /* slate-700 */
+  border-color: rgb(71 85 105); /* slate-600 */
+}
+
+/* Tooltip improvements */
+.dark [data-radix-tooltip-content] {
+  background-color: rgb(15 23 42); /* slate-900 */
+  color: rgb(248 250 252); /* slate-50 */
+  border-color: rgb(71 85 105); /* slate-600 */
+}
+
+/* Loading spinner improvements */
+.dark .animate-spin {
+  color: rgb(148 163 184); /* slate-400 */
+}
+
+/* Link improvements */
+.dark a:hover {
+  color: rgb(96 165 250); /* blue-400 */
+}
+
+/* Code block improvements */
+.dark pre {
+  background-color: rgb(15 23 42); /* slate-900 */
+  border-color: rgb(71 85 105); /* slate-600 */
+}
+
+.dark code {
+  background-color: rgb(51 65 85); /* slate-600 */
+  color: rgb(248 250 252); /* slate-50 */
+}
+
+/* Selection improvements */
+.dark ::selection {
+  background-color: rgb(59 130 246 / 0.3); /* blue-500 with opacity */
+  color: rgb(248 250 252); /* slate-50 */
+}
+
+/* Add gradient backgrounds for cards */
+.dark .bg-gradient-to-br {
+  background: linear-gradient(to bottom right, rgb(30 41 59), rgb(15 23 42));
+}
