@@ -1215,10 +1215,10 @@ function AdminDashboardContent() {
                         <div className="space-y-3">
                           {Object.entries(selectedProject.languages || {}).map(([lang, bytes]) => {
                             const total = Object.values(selectedProject.languages || {}).reduce(
-                              (a: number, b: number) => a + b,
+                              (a, b) => Number(a) + Number(b),
                               0,
-                            )
-                            const percentage = (((bytes as number) / total) * 100).toFixed(1)
+                            ) as any
+                            const percentage = total > 0 ? (((Number(bytes) / total) * 100).toFixed(1)) : "0.0"
                             return (
                               <div key={lang} className="space-y-1">
                                 <div className="flex justify-between text-sm">
@@ -1534,7 +1534,7 @@ function AdminDashboardContent() {
 
 export default function AdminDashboard() {
   return (
-    <ProtectedRoute requiredRole="admin">
+    <ProtectedRoute requireAdmin>
       <AdminDashboardContent />
     </ProtectedRoute>
   )

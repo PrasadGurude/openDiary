@@ -1,42 +1,19 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "../auth/[...nextauth]/route"
+import { getUserFromRequest } from "@/lib/auth"
 
-// GET /api/projects - Get all projects
-export async function GET(request: Request) {
-  // Projects are public, no authentication required
-
-  // In a real application, you would fetch projects from your database
-  // For now, we'll return dummy data
-  return NextResponse.json({
-    projects: [
-      // Dummy data would be here
-    ],
-  })
+// GET all projects (public)
+export async function GET(request: Request): Promise<Response> {
+  // ...fetch projects from db...
+  return NextResponse.json({ projects: [] })
 }
 
-// POST /api/projects - Create a new project
-export async function POST(request: Request) {
-  const session = await getServerSession(authOptions)
-
-  // Check if user is authenticated
-  if (!session) {
+// POST create project (auth required)
+export async function POST(request: Request): Promise<Response> {
+  const user = getUserFromRequest(request)
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-
-  try {
-    const body = await request.json()
-
-    // In a real application, you would validate and save the project to your database
-    // For now, we'll just return the data that was sent
-    return NextResponse.json(
-      {
-        message: "Project created successfully",
-        project: body,
-      },
-      { status: 201 },
-    )
-  } catch (error) {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
-  }
+  const body = await request.json()
+  // ...create project in db...
+  return NextResponse.json({ message: "Project created", project: body }, { status: 201 })
 }

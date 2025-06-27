@@ -1,20 +1,15 @@
 import { NextResponse } from "next/server"
+import { githubFetch } from "@/lib/github"
 
-// GET /api/github/repos/[owner]/[repo]/contributors - Get GitHub repo contributors
-export async function GET(request: Request, { params }: { params: { owner: string; repo: string } }) {
-  // In a real application, you would fetch data from the GitHub API
-  // For now, we'll return dummy data
-  return NextResponse.json([
-    {
-      login: "user1",
-      avatar_url: "https://github.com/user1.png",
-      contributions: 100,
-    },
-    {
-      login: "user2",
-      avatar_url: "https://github.com/user2.png",
-      contributions: 50,
-    },
-    // More contributors
-  ])
+interface Params {
+  params: { owner: string; repo: string }
+}
+
+export async function GET(request: Request, { params }: Params): Promise<Response> {
+  const res = await githubFetch(`https://api.github.com/repos/${params.owner}/${params.repo}/contributors`)
+  if (!res.ok) {
+    return NextResponse.json({ error: "Contributors not found" }, { status: 404 })
+  }
+  const contributors = await res.json()
+  return NextResponse.json(contributors)
 }

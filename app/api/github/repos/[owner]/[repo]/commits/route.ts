@@ -1,24 +1,15 @@
 import { NextResponse } from "next/server"
+import { githubFetch } from "@/lib/github"
 
-// GET /api/github/repos/[owner]/[repo]/commits - Get GitHub repo commits
-export async function GET(request: Request, { params }: { params: { owner: string; repo: string } }) {
-  // In a real application, you would fetch data from the GitHub API
-  // For now, we'll return dummy data
-  return NextResponse.json([
-    {
-      sha: "abc123",
-      commit: {
-        message: "Fix bug in authentication",
-        author: {
-          name: "User Name",
-          date: "2023-06-01T12:00:00Z",
-        },
-      },
-      author: {
-        login: "username",
-        avatar_url: "https://github.com/username.png",
-      },
-    },
-    // More commits
-  ])
+interface Params {
+  params: { owner: string; repo: string }
+}
+
+export async function GET(request: Request, { params }: Params): Promise<Response> {
+  const res = await githubFetch(`https://api.github.com/repos/${params.owner}/${params.repo}/commits`)
+  if (!res.ok) {
+    return NextResponse.json({ error: "Commits not found" }, { status: 404 })
+  }
+  const commits = await res.json()
+  return NextResponse.json(commits)
 }

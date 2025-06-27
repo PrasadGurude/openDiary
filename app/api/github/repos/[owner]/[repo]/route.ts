@@ -1,20 +1,15 @@
 import { NextResponse } from "next/server"
+import { githubFetch } from "@/lib/github"
 
-// GET /api/github/repos/[owner]/[repo] - Get GitHub repo data
-export async function GET(request: Request, { params }: { params: { owner: string; repo: string } }) {
-  // In a real application, you would fetch data from the GitHub API
-  // For now, we'll return dummy data
-  return NextResponse.json({
-    repo: {
-      name: params.repo,
-      full_name: `${params.owner}/${params.repo}`,
-      description: "Repository description",
-      stargazers_count: 100,
-      forks_count: 20,
-      open_issues_count: 5,
-      language: "TypeScript",
-      topics: ["nextjs", "react", "typescript"],
-      // Other GitHub repo data
-    },
-  })
+interface Params {
+  params: { owner: string; repo: string }
+}
+
+export async function GET(request: Request, { params }: Params): Promise<Response> {
+  const res = await githubFetch(`https://api.github.com/repos/${params.owner}/${params.repo}`)
+  if (!res.ok) {
+    return NextResponse.json({ error: "GitHub repo not found" }, { status: 404 })
+  }
+  const repo = await res.json()
+  return NextResponse.json({ repo })
 }

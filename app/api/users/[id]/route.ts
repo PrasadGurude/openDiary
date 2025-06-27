@@ -1,67 +1,37 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "../../auth/[...nextauth]/route"
+import { getUserFromRequest } from "@/lib/auth"
 
-// GET /api/users/[id] - Get a specific user
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions)
-
-  // Check if user is authenticated and is either the requested user or an admin
-  if (!session || (session.user.id !== params.id && session.user.role !== "ADMIN")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  // In a real application, you would fetch the user from your database
-  // For now, we'll return dummy data
-  return NextResponse.json({
-    user: {
-      id: params.id,
-      name: "User Name",
-      email: "user@example.com",
-      // Other user data
-    },
-  })
+interface Params {
+  params: { id: string }
 }
 
-// PATCH /api/users/[id] - Update a specific user
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions)
-
-  // Check if user is authenticated and is either the requested user or an admin
-  if (!session || (session.user.id !== params.id && session.user.role !== "ADMIN")) {
+// GET user by id (self or admin)
+export async function GET(request: Request, { params }: Params): Promise<Response> {
+  const user = getUserFromRequest(request)
+  if (!user || (user.id !== params.id && user.role !== "ADMIN")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-
-  try {
-    const body = await request.json()
-
-    // In a real application, you would update the user in your database
-    // For now, we'll just return the data that was sent
-    return NextResponse.json({
-      message: "User updated successfully",
-      user: {
-        id: params.id,
-        ...body,
-      },
-    })
-  } catch (error) {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
-  }
+  // ...fetch user from db...
+  return NextResponse.json({ user: { id: params.id } })
 }
 
-// DELETE /api/users/[id] - Delete a specific user
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions)
-
-  // Check if user is authenticated and is an admin
-  if (!session || session.user.role !== "ADMIN") {
+// PATCH update user (self or admin)
+export async function PATCH(request: Request, { params }: Params): Promise<Response> {
+  const user = getUserFromRequest(request)
+  if (!user || (user.id !== params.id && user.role !== "ADMIN")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
+  const body = await request.json()
+  // ...update user in db...
+  return NextResponse.json({ message: "User updated", user: { id: params.id, ...body } })
+}
 
-  // In a real application, you would delete the user from your database
-  // For now, we'll just return a success message
-  return NextResponse.json({
-    message: "User deleted successfully",
-    id: params.id,
-  })
+// DELETE user (admin only)
+export async function DELETE(request: Request, { params }: Params): Promise<Response> {
+  const user = getUserFromRequest(request)
+  if (!user || user.role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+  // ...delete user from db...
+  return NextResponse.json({ message: "User deleted", id: params.id })
 }
