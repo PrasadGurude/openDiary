@@ -1,10 +1,11 @@
 "use client"
 
 import Link from "next/link"
+import React from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Star, GitFork, ExternalLink, Github, Calendar, TrendingUp, TrendingDown, Eye } from "lucide-react"
+import { Star, GitFork, ExternalLink, Github, Calendar, TrendingUp, TrendingDown, Eye, Bookmark as BookmarkIcon } from "lucide-react"
 import { LanguageBar } from "./language-bar"
 import { ProjectTags } from "./project-tags"
 import type { Project } from "@/lib/data"
@@ -31,6 +32,14 @@ export function ProjectCard({ project, showActions = true, className = "" }: Pro
     return (project.upvotes / total) * 100
   }
 
+  // Simulate bookmark state (in real app, use user context or API)
+  const [bookmarked, setBookmarked] = React.useState(false)
+  const handleBookmark = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setBookmarked((prev) => !prev)
+    // In real app, call API to add/remove bookmark
+  }
+
   return (
     <Card
       className={`
@@ -54,6 +63,16 @@ export function ProjectCard({ project, showActions = true, className = "" }: Pro
               >
                 {project.name}
               </Link>
+              {/* Bookmark Button */}
+              <Button
+                size="icon"
+                variant={bookmarked ? "default" : "outline"}
+                className={`ml-2 border ${bookmarked ? "bg-yellow-200 text-yellow-700" : "bg-white dark:bg-slate-900"}`}
+                aria-label={bookmarked ? "Remove Bookmark" : "Bookmark"}
+                onClick={handleBookmark}
+              >
+                <BookmarkIcon className={`h-5 w-5 ${bookmarked ? "fill-yellow-400" : ""}`} />
+              </Button>
             </div>
             <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 line-clamp-2 leading-relaxed">
               {project.description}

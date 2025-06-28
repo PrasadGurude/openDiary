@@ -6,10 +6,157 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../lib/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum TagType {
+  YCOMBINATOR
+  GSOC
+  WTFUND
+  HACKTOBERFEST
+  DEVFOLIO
+  MLH
+}
+
+enum SuggestionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}
+
+model User {
+  id                 String   @id @default(cuid())
+  name               String
+  email              String   @unique
+  githubUsername     String   @unique
+  githubProfile      String?  
+  bio                String? 
+  avatarUrl          String?  
+  skills             String[]
+  experience         String?  
+  interests          String[]
+  contributionScore  Int      @default(0)
+  totalCommits       Int      @default(0)
+  totalPRs           Int      @default(0)
+  totalStars         Int      @default(0)
+  githubFollowers    Int      @default(0)
+  topLanguages       String[]
+  verifiedGithub     Boolean  @default(false)
+  publicProfile      Boolean  @default(true)
+  isDiscoverable     Boolean  @default(true)
+  twitterHandle      String?  
+  linkedinUrl        String?  
+  mobile             String?  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  bookmarks          Bookmark[]
+  suggestions        ProjectSuggestion[]
+  votes              ProjectVote[]
+  followers          UserFollow[]        @relation("Following")
+  following          UserFollow[]        @relation("Followers")
+}
+
+model UserFollow {
+  id           String @id @default(cuid())
+  follower     User   @relation("Following", fields: [followerId], references: [id])
+  followerId   String
+  following    User   @relation("Followers", fields: [followingId], references: [id])
+  followingId  String
+
+  @@unique([followerId, followingId])
+}
+
+model Project {
+  id           String   @id @default(cuid())
+  name         String
+  fullName     String   @unique
+  githubUrl    String   @unique
+  liveLink     String?  
+  description  String?  
+  stars        Int      @default(0)
+  forks        Int      @default(0)
+  owner        String?
+  license      String?  
+  topics       String[]
+  languages    Json?
+  visibility   Boolean  @default(true)
+  autoSynced   Boolean  @default(false)
+  lastSyncedAt DateTime?
+  approved     Boolean  @default(false)
+  upvotes      Int      @default(0)
+  downvotes    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tags         ProjectTag[]
+  bookmarks    Bookmark[]
+  votes        ProjectVote[]
+}
+
+model ProjectTag {
+  id        String   @id @default(cuid())
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+  type      TagType
+  sourceUrl String
+  verified  Boolean  @default(false)
+
+  @@unique([projectId, type])
+}
+
+model ProjectSuggestion {
+  id              String           @id @default(cuid())
+  githubUrl       String
+  notes           String?          
+  submittedBy     User             @relation(fields: [submittedById], references: [id])
+  submittedById   String
+  status          SuggestionStatus @default(PENDING)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  suggestedTags   SuggestedTag[]
+}
+
+model SuggestedTag {
+  id            String            @id @default(cuid())
+  suggestion    ProjectSuggestion @relation(fields: [suggestionId], references: [id])
+  suggestionId  String
+  type          TagType
+  sourceUrl     String
+  verified      Boolean  @default(false)
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, projectId])
+}
+
+model ProjectVote {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  project   Project  @relation(fields: [projectId], references: [id])
+  projectId String
+  type      VoteType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, projectId])
 }

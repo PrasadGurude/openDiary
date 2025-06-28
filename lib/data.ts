@@ -2,16 +2,39 @@
 import { TagType } from "./types"
 import type { ProjectTag } from "./types"
 
+// --- Additional types for schema relations ---
+export interface Bookmark {
+  id: string
+  userId: string
+  projectId: string
+  createdAt: string
+}
+
+export interface ProjectVote {
+  id: string
+  userId: string
+  projectId: string
+  type: "UPVOTE" | "DOWNVOTE"
+  createdAt: string
+}
+
+export interface UserFollow {
+  id: string
+  followerId: string
+  followingId: string
+}
+
+// --- Extend User and Project interfaces for relations ---
 export interface User {
   id: string
   name: string
   email: string
   githubUsername: string
-  githubProfile: string
-  bio: string
-  avatarUrl: string
+  githubProfile?: string | null
+  bio?: string | null
+  avatarUrl?: string | null
   skills: string[]
-  experience: string
+  experience?: string | null
   interests: string[]
   contributionScore: number
   totalCommits: number
@@ -22,10 +45,16 @@ export interface User {
   verifiedGithub: boolean
   publicProfile: boolean
   isDiscoverable: boolean
-  twitterHandle?: string
-  linkedinUrl?: string
-  mobile?: string
+  twitterHandle?: string | null
+  linkedinUrl?: string | null
+  mobile?: string | null
   createdAt: string
+  updatedAt: string
+  bookmarks: Bookmark[]
+  suggestions: any[]
+  votes: ProjectVote[]
+  followers: UserFollow[]
+  following: UserFollow[]
 }
 
 export interface GitHubRelease {
@@ -122,54 +151,26 @@ export interface Project {
   name: string
   fullName: string
   githubUrl: string
-  liveLink?: string
-  description: string
+  liveLink?: string | null
+  description?: string | null
   stars: number
   forks: number
-  owner: string
-  license: string
+  owner?: string | null
+  license?: string | null
   topics: string[]
-  languages: Record<string, number>
+  languages?: Record<string, number> | null
   visibility: boolean
   autoSynced: boolean
-  lastSyncedAt?: string
+  lastSyncedAt?: string | null
   approved: boolean
   upvotes: number
   downvotes: number
   createdAt: string
+  updatedAt: string
   tags: ProjectTag[]
-  // Enhanced GitHub API data
-  githubData: {
-    watchers: number
-    openIssues: number
-    closedIssues: number
-    openPRs: number
-    closedPRs: number
-    totalCommits: number
-    branches: string[]
-    releases: GitHubRelease[]
-    contributors: GitHubContributor[]
-    recentCommits: GitHubCommit[]
-    issues: GitHubIssue[]
-    pullRequests: GitHubPullRequest[]
-    codeFrequency: number[]
-    commitActivity: number[]
-    lastCommit: string
-    defaultBranch: string
-    size: number // in KB
-    hasWiki: boolean
-    hasPages: boolean
-    hasProjects: boolean
-    archived: boolean
-    disabled: boolean
-    pushedAt: string
-    updatedAt: string
-    cloneUrl: string
-    sshUrl: string
-    homepage?: string
-    networkCount: number
-    subscribersCount: number
-  }
+  bookmarks: Bookmark[]
+  votes: ProjectVote[]
+  githubData: any
 }
 
 // Mock Users Data
@@ -196,7 +197,14 @@ const mockUsers: User[] = [
     isDiscoverable: true,
     twitterHandle: "@sarahchen_dev",
     linkedinUrl: "https://linkedin.com/in/sarahchen",
+    mobile: null,
     createdAt: "2023-01-15T00:00:00Z",
+    updatedAt: "2024-01-15T00:00:00Z",
+    bookmarks: [],
+    suggestions: [],
+    votes: [],
+    followers: [],
+    following: [],
   },
   {
     id: "2",
@@ -220,7 +228,14 @@ const mockUsers: User[] = [
     isDiscoverable: true,
     linkedinUrl: "https://linkedin.com/in/marcusrodriguez",
     twitterHandle: "@marcus_devops",
+    mobile: null,
     createdAt: "2022-08-20T00:00:00Z",
+    updatedAt: "2024-01-15T00:00:00Z",
+    bookmarks: [],
+    suggestions: [],
+    votes: [],
+    followers: [],
+    following: [],
   },
   {
     id: "3",
@@ -243,7 +258,15 @@ const mockUsers: User[] = [
     publicProfile: true,
     isDiscoverable: true,
     twitterHandle: "emily_codes",
+    linkedinUrl: null,
+    mobile: null,
     createdAt: "2023-03-10T00:00:00Z",
+    updatedAt: "2024-01-15T00:00:00Z",
+    bookmarks: [],
+    suggestions: [],
+    votes: [],
+    followers: [],
+    following: [],
   },
   {
     id: "4",
@@ -266,7 +289,15 @@ const mockUsers: User[] = [
     publicProfile: true,
     isDiscoverable: true,
     linkedinUrl: "https://linkedin.com/in/davidkim-ml",
+    twitterHandle: null,
+    mobile: null,
     createdAt: "2022-11-05T00:00:00Z",
+    updatedAt: "2024-01-15T00:00:00Z",
+    bookmarks: [],
+    suggestions: [],
+    votes: [],
+    followers: [],
+    following: [],
   },
   {
     id: "5",
@@ -289,7 +320,15 @@ const mockUsers: User[] = [
     publicProfile: true,
     isDiscoverable: true,
     twitterHandle: "alex_mobile",
+    linkedinUrl: null,
+    mobile: null,
     createdAt: "2023-05-18T00:00:00Z",
+    updatedAt: "2024-01-15T00:00:00Z",
+    bookmarks: [],
+    suggestions: [],
+    votes: [],
+    followers: [],
+    following: [],
   },
   {
     id: "6",
@@ -312,7 +351,15 @@ const mockUsers: User[] = [
     publicProfile: true,
     isDiscoverable: true,
     linkedinUrl: "https://linkedin.com/in/lisazhang-devops",
+    twitterHandle: null,
+    mobile: null,
     createdAt: "2022-09-12T00:00:00Z",
+    updatedAt: "2024-01-15T00:00:00Z",
+    bookmarks: [],
+    suggestions: [],
+    votes: [],
+    followers: [],
+    following: [],
   },
   {
     id: "7",
@@ -335,7 +382,15 @@ const mockUsers: User[] = [
     publicProfile: true,
     isDiscoverable: true,
     twitterHandle: "@james_web3",
+    linkedinUrl: null,
+    mobile: null,
     createdAt: "2023-02-14T00:00:00Z",
+    updatedAt: "2024-01-15T00:00:00Z",
+    bookmarks: [],
+    suggestions: [],
+    votes: [],
+    followers: [],
+    following: [],
   },
   {
     id: "8",
@@ -358,7 +413,15 @@ const mockUsers: User[] = [
     publicProfile: true,
     isDiscoverable: true,
     linkedinUrl: "https://linkedin.com/in/mariagarcia-security",
+    twitterHandle: null,
+    mobile: null,
     createdAt: "2023-04-22T00:00:00Z",
+    updatedAt: "2024-01-15T00:00:00Z",
+    bookmarks: [],
+    suggestions: [],
+    votes: [],
+    followers: [],
+    following: [],
   },
   {
     id: "9",
@@ -381,7 +444,15 @@ const mockUsers: User[] = [
     publicProfile: true,
     isDiscoverable: true,
     twitterHandle: "@robert_gamedev",
+    linkedinUrl: null,
+    mobile: null,
     createdAt: "2023-06-08T00:00:00Z",
+    updatedAt: "2024-01-15T00:00:00Z",
+    bookmarks: [],
+    suggestions: [],
+    votes: [],
+    followers: [],
+    following: [],
   },
   {
     id: "10",
@@ -404,7 +475,15 @@ const mockUsers: User[] = [
     publicProfile: true,
     isDiscoverable: true,
     linkedinUrl: "https://linkedin.com/in/annakowalski-data",
+    twitterHandle: null,
+    mobile: null,
     createdAt: "2022-12-18T00:00:00Z",
+    updatedAt: "2024-01-15T00:00:00Z",
+    bookmarks: [],
+    suggestions: [],
+    votes: [],
+    followers: [],
+    following: [],
   },
 ]
 
@@ -501,6 +580,16 @@ function generateAdditionalUsers(count: number): User[] {
         Math.floor(Math.random() * 12),
         Math.floor(Math.random() * 28),
       ).toISOString(),
+      updatedAt: new Date(
+        2022 + Math.floor(Math.random() * 2),
+        Math.floor(Math.random() * 12),
+        Math.floor(Math.random() * 28),
+      ).toISOString(),
+      bookmarks: [],
+      suggestions: [],
+      votes: [],
+      followers: [],
+      following: [],
     }
   })
 }
@@ -533,11 +622,13 @@ const mockProjects: Project[] = [
     upvotes: 234,
     downvotes: 12,
     createdAt: "2023-01-20T00:00:00Z",
-    lastSyncedAt: "2024-01-15T10:30:00Z",
+    updatedAt: "2024-01-15T10:30:00Z",
     tags: [
       { id: "1", projectId: "1", type: TagType.HACKTOBERFEST, sourceUrl: "https://hacktoberfest.com", verified: true },
       { id: "2", projectId: "1", type: TagType.DEVFOLIO, sourceUrl: "https://devfolio.co", verified: true },
     ],
+    bookmarks: [],
+    votes: [],
     githubData: {
       watchers: 892,
       openIssues: 23,
@@ -764,11 +855,13 @@ const mockProjects: Project[] = [
     upvotes: 156,
     downvotes: 8,
     createdAt: "2022-11-15T00:00:00Z",
-    lastSyncedAt: "2024-01-14T08:15:00Z",
+    updatedAt: "2024-01-14T08:15:00Z",
     tags: [
       { id: "3", projectId: "2", type: TagType.GSOC, sourceUrl: "https://summerofcode.withgoogle.com", verified: true },
       { id: "4", projectId: "2", type: TagType.YCOMBINATOR, sourceUrl: "https://ycombinator.com", verified: false },
     ],
+    bookmarks: [],
+    votes: [],
     githubData: {
       watchers: 634,
       openIssues: 45,
@@ -898,7 +991,91 @@ const mockProjects: Project[] = [
       subscribersCount: 634,
     },
   },
-  // Add more projects...
+  {
+    id: "3",
+    name: "design-system-builder",
+    fullName: "emilywatson/design-system-builder",
+    githubUrl: "https://github.com/emilywatson/design-system-builder",
+    liveLink: "https://design-system-builder.dev",
+    description: "Visual tool for creating and maintaining design systems with React components.",
+    stars: 4200,
+    forks: 650,
+    owner: "emilywatson",
+    license: "MIT",
+    topics: ["design-system", "react", "storybook", "ui"],
+    languages: { TypeScript: 70, JavaScript: 20, CSS: 10 },
+    visibility: true,
+    autoSynced: true,
+    lastSyncedAt: "2024-01-10T10:00:00Z",
+    approved: true,
+    upvotes: 120,
+    downvotes: 3,
+    createdAt: "2023-03-15T00:00:00Z",
+    updatedAt: "2024-01-10T10:00:00Z",
+    tags: [
+      { id: "5", projectId: "3", type: TagType.MLH, sourceUrl: "https://mlh.io", verified: true },
+    ],
+    bookmarks: [],
+    votes: [],
+    githubData: {},
+  },
+  {
+    id: "4",
+    name: "ml-model-deployment",
+    fullName: "davidkim/ml-model-deployment",
+    githubUrl: "https://github.com/davidkim/ml-model-deployment",
+    liveLink: null,
+    description: "Production-ready ML model deployment platform with auto-scaling and monitoring.",
+    stars: 3100,
+    forks: 410,
+    owner: "davidkim",
+    license: "Apache-2.0",
+    topics: ["ml", "deployment", "python", "cloud"],
+    languages: { Python: 80, YAML: 15, Shell: 5 },
+    visibility: true,
+    autoSynced: false,
+    lastSyncedAt: null,
+    approved: true,
+    upvotes: 98,
+    downvotes: 2,
+    createdAt: "2023-04-10T00:00:00Z",
+    updatedAt: "2024-01-11T10:00:00Z",
+    tags: [
+      { id: "6", projectId: "4", type: TagType.GSOC, sourceUrl: "https://summerofcode.withgoogle.com", verified: true },
+    ],
+    bookmarks: [],
+    votes: [],
+    githubData: {},
+  },
+  {
+    id: "5",
+    name: "security-scanner",
+    fullName: "mariagarcia/security-scanner",
+    githubUrl: "https://github.com/mariagarcia/security-scanner",
+    liveLink: null,
+    description: "Comprehensive security scanner for web applications and APIs.",
+    stars: 2100,
+    forks: 320,
+    owner: "mariagarcia",
+    license: "GPL-3.0",
+    topics: ["security", "scanner", "python", "web"],
+    languages: { Python: 90, Shell: 10 },
+    visibility: true,
+    autoSynced: false,
+    lastSyncedAt: null,
+    approved: false,
+    upvotes: 45,
+    downvotes: 7,
+    createdAt: "2023-05-01T00:00:00Z",
+    updatedAt: "2024-01-12T10:00:00Z",
+    tags: [
+      { id: "7", projectId: "5", type: TagType.WTFUND, sourceUrl: "https://wtfund.com", verified: false },
+    ],
+    bookmarks: [],
+    votes: [],
+    githubData: {},
+  },
+  // ...add more projects as needed...
 ]
 
 // Generate additional projects
@@ -997,7 +1174,11 @@ function generateAdditionalProjects(count: number): Project[] {
         Math.floor(Math.random() * 12),
         Math.floor(Math.random() * 28),
       ).toISOString(),
-      lastSyncedAt: Math.random() > 0.3 ? new Date().toISOString() : undefined,
+      updatedAt: new Date(
+        2022 + Math.floor(Math.random() * 2),
+        Math.floor(Math.random() * 12),
+        Math.floor(Math.random() * 28),
+      ).toISOString(),
       tags: [
         {
           id: (i + 5).toString(),
@@ -1009,6 +1190,8 @@ function generateAdditionalProjects(count: number): Project[] {
           verified: Math.random() > 0.3,
         },
       ],
+      bookmarks: [],
+      votes: [],
       githubData: {
         watchers: Math.floor(Math.random() * 1000) + 50,
         openIssues: Math.floor(Math.random() * 50) + 5,
@@ -1130,36 +1313,87 @@ function generateAdditionalProjects(count: number): Project[] {
 const allUsers = [...mockUsers, ...generateAdditionalUsers(40)]
 const allProjects = [...mockProjects, ...generateAdditionalProjects(47)]
 
-// Export functions
+// --- Mock Data for Bookmarks, Votes, Follows ---
+const mockBookmarks: Bookmark[] = [
+  { id: "b1", userId: "1", projectId: "1", createdAt: "2024-01-15T10:00:00Z" },
+  { id: "b2", userId: "2", projectId: "2", createdAt: "2024-01-15T10:05:00Z" },
+  { id: "b3", userId: "3", projectId: "3", createdAt: "2024-01-16T09:00:00Z" },
+  { id: "b4", userId: "1", projectId: "3", createdAt: "2024-01-16T10:00:00Z" },
+  { id: "b5", userId: "2", projectId: "4", createdAt: "2024-01-17T11:00:00Z" },
+  { id: "b6", userId: "4", projectId: "1", createdAt: "2024-01-18T12:00:00Z" },
+]
+
+const mockVotes: ProjectVote[] = [
+  { id: "v1", userId: "1", projectId: "1", type: "UPVOTE", createdAt: "2024-01-15T10:10:00Z" },
+  { id: "v2", userId: "2", projectId: "2", type: "UPVOTE", createdAt: "2024-01-15T10:12:00Z" },
+]
+
+const mockUserFollows: UserFollow[] = [
+  { id: "f1", followerId: "1", followingId: "2" },
+  { id: "f2", followerId: "2", followingId: "1" },
+]
+
+// --- Enhance mockUsers and mockProjects with relations ---
+const enhancedMockUsers: User[] = mockUsers.map((user) => ({
+  ...user,
+  bookmarks: mockBookmarks.filter((b) => b.userId === user.id),
+  votes: mockVotes.filter((v) => v.userId === user.id),
+  followers: mockUserFollows.filter((f) => f.followingId === user.id),
+  following: mockUserFollows.filter((f) => f.followerId === user.id),
+  twitterHandle: user.twitterHandle ?? null,
+  linkedinUrl: user.linkedinUrl ?? null,
+  mobile: user.mobile ?? null,
+}))
+
+const enhancedMockProjects: Project[] = mockProjects.map((project) => ({
+  ...project,
+  bookmarks: mockBookmarks.filter((b) => b.projectId === project.id),
+  votes: mockVotes.filter((v) => v.projectId === project.id),
+  tags: project.tags || [],
+  liveLink: project.liveLink ?? null,
+  description: project.description ?? null,
+  license: project.license ?? null,
+  owner: project.owner ?? null,
+  languages: project.languages ?? null,
+  lastSyncedAt: project.lastSyncedAt ?? null,
+}))
+
+// --- Export functions using enhanced data ---
 export function getAllContributors(): User[] {
-  return allUsers
+  return enhancedMockUsers
 }
 
 export function getFeaturedContributors(limit = 6): User[] {
-  return allUsers.sort((a, b) => b.contributionScore - a.contributionScore).slice(0, limit)
+  return enhancedMockUsers.sort((a, b) => b.contributionScore - a.contributionScore).slice(0, limit)
 }
 
 export function getContributorByUsername(username: string): User | null {
-  return allUsers.find((user) => user.githubUsername === username) || null
+  return enhancedMockUsers.find((user) => user.githubUsername === username) || null
 }
 
 export function getAllProjects(): Project[] {
-  return allProjects
+  return enhancedMockProjects
 }
 
 export function getFeaturedProjects(limit = 6): Project[] {
-  return allProjects.sort((a, b) => b.stars - a.stars).slice(0, limit)
+  return enhancedMockProjects.sort((a, b) => b.stars - a.stars).slice(0, limit)
 }
 
 export function getProjectById(id: string): Project | null {
-  return allProjects.find((project) => project.id === id) || null
+  return enhancedMockProjects.find((project) => project.id === id) || null
 }
 
 export function getContributorProjects(userId: string): Project[] {
-  const user = allUsers.find((u) => u.id === userId)
+  const user = enhancedMockUsers.find((u) => u.id === userId)
   if (!user) return []
-  return allProjects.filter((project) => project.owner === user.githubUsername)
+  return enhancedMockProjects.filter((project) => project.owner === user.githubUsername)
 }
 
 // Export the mock data for direct access
-export { allUsers as mockUsers, allProjects as mockProjects }
+export {
+  enhancedMockUsers as mockUsers,
+  enhancedMockProjects as mockProjects,
+  mockBookmarks,
+  mockVotes,
+  mockUserFollows,
+}
