@@ -485,6 +485,64 @@ const mockUsers: User[] = [
     followers: [],
     following: [],
   },
+  // Add 35 more users for a total of 45
+  ...Array.from({ length: 35 }, (_, i) => {
+    const idx = i + 11
+    const name = `Demo User ${idx}`
+    const username = `demouser${idx}`
+    const skillsList = [
+      ["JavaScript", "React", "Node.js"],
+      ["Python", "Django", "PostgreSQL"],
+      ["Go", "Kubernetes", "Docker"],
+      ["Java", "Spring Boot", "MySQL"],
+      ["Rust", "WebAssembly", "Actix"],
+      ["PHP", "Laravel", "Vue.js"],
+      ["C#", ".NET Core", "Azure"],
+      ["Ruby", "Rails", "Sidekiq"],
+      ["Swift", "iOS", "SwiftUI"],
+      ["Kotlin", "Android", "Jetpack Compose"],
+    ]
+    const skills = skillsList[i % skillsList.length]
+    return {
+      id: idx.toString(),
+      name,
+      email: `${username}@example.com`,
+      githubUsername: username,
+      githubProfile: `https://github.com/${username}`,
+      bio: `Demo user ${idx} interested in ${skills[0]} and open source.`,
+      avatarUrl: `/placeholder.svg?height=100&width=100`,
+      skills,
+      experience: ["Beginner", "Intermediate", "Advanced"][i % 3],
+      interests: ["Web Development", "Cloud", "AI", "Mobile", "Security"].slice(0, 2 + (i % 3)),
+      contributionScore: Math.floor(Math.random() * 3000) + 500,
+      totalCommits: Math.floor(Math.random() * 2000) + 100,
+      totalPRs: Math.floor(Math.random() * 150) + 10,
+      totalStars: Math.floor(Math.random() * 5000) + 50,
+      githubFollowers: Math.floor(Math.random() * 1000) + 10,
+      topLanguages: skills,
+      verifiedGithub: Math.random() > 0.2,
+      publicProfile: true,
+      isDiscoverable: Math.random() > 0.1,
+      twitterHandle: Math.random() > 0.5 ? `@${username}_dev` : null,
+      linkedinUrl: Math.random() > 0.3 ? `https://linkedin.com/in/${username}` : null,
+      mobile: null,
+      createdAt: new Date(
+        2022 + Math.floor(Math.random() * 2),
+        Math.floor(Math.random() * 12),
+        Math.floor(Math.random() * 28),
+      ).toISOString(),
+      updatedAt: new Date(
+        2023 + Math.floor(Math.random() * 2),
+        Math.floor(Math.random() * 12),
+        Math.floor(Math.random() * 28),
+      ).toISOString(),
+      bookmarks: [],
+      suggestions: [],
+      votes: [],
+      followers: [],
+      following: [],
+    }
+  }),
 ]
 
 // Generate additional users
@@ -594,8 +652,12 @@ function generateAdditionalUsers(count: number): User[] {
   })
 }
 
-// Enhanced mock projects with comprehensive GitHub API data
-const mockProjects: Project[] = [
+// --- Enhanced mock projects with comprehensive GitHub API data ---
+// Declare mockProjects as an empty array first to allow referencing it in generateAdditionalProjects
+let mockProjects: Project[] = []
+
+// Now assign mockProjects with initial projects and generated projects
+mockProjects = [
   {
     id: "1",
     name: "awesome-react-components",
@@ -1075,7 +1137,81 @@ const mockProjects: Project[] = [
     votes: [],
     githubData: {},
   },
-  // ...add more projects as needed...
+  // Add more projects to reach at least 50
+  ...Array.from({ length: 50 - 5 }, (_, i) => {
+    const idx = i + 6
+    const ownerIdx = (idx - 1) % mockUsers.length
+    const owner = mockUsers[ownerIdx].githubUsername
+    const name = `demo-project-${idx}`
+    const topicsList = [
+      ["javascript", "react", "frontend"],
+      ["python", "api", "backend"],
+      ["go", "cloud", "kubernetes"],
+      ["typescript", "node", "express"],
+      ["rust", "cli", "performance"],
+      ["java", "spring", "enterprise"],
+      ["swift", "ios", "mobile"],
+      ["kotlin", "android", "mobile"],
+      ["php", "laravel", "web"],
+      ["ruby", "rails", "web"],
+    ]
+    const topics = topicsList[i % topicsList.length]
+    const languageSets: Record<string, number>[] = [
+      { TypeScript: 60, JavaScript: 30, CSS: 10 },
+      { Python: 75, YAML: 15, Shell: 10 },
+      { Go: 80, YAML: 12, Dockerfile: 8 },
+      { JavaScript: 55, TypeScript: 35, CSS: 10 },
+      { Rust: 85, TOML: 10, Shell: 5 },
+      { Java: 70, XML: 20, Properties: 10 },
+      { Swift: 90, Objective: 10 },
+      { Kotlin: 85, XML: 15 },
+      { PHP: 70, JavaScript: 20, CSS: 10 },
+      { Ruby: 80, ERB: 15, SCSS: 5 },
+    ]
+    const languages = languageSets[i % languageSets.length]
+    return {
+      id: idx.toString(),
+      name: `Demo Project ${idx}`,
+      fullName: `${owner}/demo-project-${idx}`,
+      githubUrl: `https://github.com/${owner}/demo-project-${idx}`,
+      liveLink: Math.random() > 0.5 ? `https://demo-project-${idx}.dev` : null,
+      description: `Demo project ${idx} for testing and development purposes.`,
+      stars: Math.floor(Math.random() * 10000) + 100,
+      forks: Math.floor(Math.random() * 2000) + 10,
+      owner,
+      license: ["MIT", "Apache-2.0", "GPL-3.0", "BSD-3-Clause", "ISC"][i % 5],
+      topics,
+      languages,
+      visibility: true,
+      autoSynced: Math.random() > 0.2,
+      lastSyncedAt: Math.random() > 0.3 ? new Date().toISOString() : null,
+      approved: Math.random() > 0.1,
+      upvotes: Math.floor(Math.random() * 200) + 10,
+      downvotes: Math.floor(Math.random() * 20),
+      createdAt: new Date(
+        2022 + Math.floor(Math.random() * 2),
+        Math.floor(Math.random() * 12),
+        Math.floor(Math.random() * 28),
+      ).toISOString(),
+      updatedAt: new Date(
+        2022 + Math.floor(Math.random() * 2),
+        Math.floor(Math.random() * 12),
+        Math.floor(Math.random() * 28),
+      ).toISOString(),
+      tags: [
+        {
+          id: `tag${idx}`,
+          projectId: idx.toString(),
+          type: ["HACKTOBERFEST", "GSOC", "MLH", "DEVFOLIO", "YCOMBINATOR", "WTFUND"][i % 6] as any,
+          sourceUrl: "https://example.com",
+          verified: Math.random() > 0.3,
+        },
+      ],
+      bookmarks: [],
+      votes: [],
+      githubData: {},
+    }
+  }),
 ]
 
 // Generate additional projects
@@ -1321,16 +1457,85 @@ const mockBookmarks: Bookmark[] = [
   { id: "b4", userId: "1", projectId: "3", createdAt: "2024-01-16T10:00:00Z" },
   { id: "b5", userId: "2", projectId: "4", createdAt: "2024-01-17T11:00:00Z" },
   { id: "b6", userId: "4", projectId: "1", createdAt: "2024-01-18T12:00:00Z" },
+  // More bookmarks for better coverage
+  { id: "b7", userId: "1", projectId: "2", createdAt: "2024-01-19T09:00:00Z" },
+  { id: "b8", userId: "2", projectId: "1", createdAt: "2024-01-19T10:00:00Z" },
+  { id: "b9", userId: "3", projectId: "2", createdAt: "2024-01-19T11:00:00Z" },
+  { id: "b10", userId: "4", projectId: "3", createdAt: "2024-01-19T12:00:00Z" },
+  { id: "b11", userId: "5", projectId: "1", createdAt: "2024-01-20T09:00:00Z" },
+  { id: "b12", userId: "5", projectId: "2", createdAt: "2024-01-20T10:00:00Z" },
+  { id: "b13", userId: "6", projectId: "4", createdAt: "2024-01-20T11:00:00Z" },
+  { id: "b14", userId: "7", projectId: "1", createdAt: "2024-01-20T12:00:00Z" },
+  { id: "b15", userId: "8", projectId: "2", createdAt: "2024-01-21T09:00:00Z" },
+  { id: "b16", userId: "9", projectId: "3", createdAt: "2024-01-21T10:00:00Z" },
+  { id: "b17", userId: "10", projectId: "4", createdAt: "2024-01-21T11:00:00Z" },
+  { id: "b18", userId: "3", projectId: "4", createdAt: "2024-01-21T12:00:00Z" },
+  { id: "b19", userId: "2", projectId: "3", createdAt: "2024-01-22T09:00:00Z" },
+  { id: "b20", userId: "1", projectId: "4", createdAt: "2024-01-22T10:00:00Z" },
 ]
 
+// --- Mock Data for Votes ---
 const mockVotes: ProjectVote[] = [
   { id: "v1", userId: "1", projectId: "1", type: "UPVOTE", createdAt: "2024-01-15T10:10:00Z" },
   { id: "v2", userId: "2", projectId: "2", type: "UPVOTE", createdAt: "2024-01-15T10:12:00Z" },
+  { id: "v3", userId: "3", projectId: "3", type: "DOWNVOTE", createdAt: "2024-01-16T09:10:00Z" },
+  { id: "v4", userId: "4", projectId: "1", type: "UPVOTE", createdAt: "2024-01-18T12:10:00Z" },
+  { id: "v5", userId: "5", projectId: "2", type: "UPVOTE", createdAt: "2024-01-20T10:10:00Z" },
+  { id: "v6", userId: "6", projectId: "4", type: "DOWNVOTE", createdAt: "2024-01-20T11:10:00Z" },
 ]
 
+// --- Mock Data for User Follows ---
 const mockUserFollows: UserFollow[] = [
   { id: "f1", followerId: "1", followingId: "2" },
   { id: "f2", followerId: "2", followingId: "1" },
+  { id: "f3", followerId: "3", followingId: "1" },
+  { id: "f4", followerId: "4", followingId: "2" },
+  { id: "f5", followerId: "5", followingId: "3" },
+  { id: "f6", followerId: "6", followingId: "4" },
+  { id: "f7", followerId: "7", followingId: "5" },
+  { id: "f8", followerId: "8", followingId: "6" },
+  { id: "f9", followerId: "9", followingId: "7" },
+  { id: "f10", followerId: "10", followingId: "8" },
+]
+
+// --- Mock Data for Project Suggestions ---
+const mockSuggestions = [
+  {
+    id: "s1",
+    githubUrl: "https://github.com/sarahchen/awesome-react-components",
+    notes: "Great for frontend devs",
+    submittedById: "1",
+    status: "APPROVED",
+    createdAt: "2024-01-10T10:00:00Z",
+    updatedAt: "2024-01-11T10:00:00Z",
+    suggestedTags: [
+      {
+        id: "st1",
+        suggestionId: "s1",
+        type: "HACKTOBERFEST",
+        sourceUrl: "https://hacktoberfest.com",
+        verified: true,
+      },
+    ],
+  },
+  {
+    id: "s2",
+    githubUrl: "https://github.com/marcusdev/kubernetes-operator-toolkit",
+    notes: "Cloud native operator toolkit",
+    submittedById: "2",
+    status: "PENDING",
+    createdAt: "2024-01-12T10:00:00Z",
+    updatedAt: "2024-01-12T12:00:00Z",
+    suggestedTags: [
+      {
+        id: "st2",
+        suggestionId: "s2",
+        type: "GSOC",
+        sourceUrl: "https://summerofcode.withgoogle.com",
+        verified: false,
+      },
+    ],
+  },
 ]
 
 // --- Enhance mockUsers and mockProjects with relations ---
@@ -1340,6 +1545,7 @@ const enhancedMockUsers: User[] = mockUsers.map((user) => ({
   votes: mockVotes.filter((v) => v.userId === user.id),
   followers: mockUserFollows.filter((f) => f.followingId === user.id),
   following: mockUserFollows.filter((f) => f.followerId === user.id),
+  suggestions: mockSuggestions.filter((s) => s.submittedById === user.id),
   twitterHandle: user.twitterHandle ?? null,
   linkedinUrl: user.linkedinUrl ?? null,
   mobile: user.mobile ?? null,
@@ -1396,4 +1602,5 @@ export {
   mockBookmarks,
   mockVotes,
   mockUserFollows,
+  mockSuggestions,
 }

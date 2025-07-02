@@ -160,3 +160,12 @@ model ProjectVote {
 
   @@unique([userId, projectId])
 }
+
+// 1. Generate the migration SQL and apply it to your database:
+// npx prisma migrate dev --name init
+
+// 2. (Optional) If you want to just create tables without generating a migration history:
+// npx prisma db push
+
+// After this, re-run your seed script:
+// npx tsx scripts/seed-dummy-data.ts
