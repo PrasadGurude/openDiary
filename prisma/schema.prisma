@@ -37,6 +37,8 @@ model User {
   id                 String   @id @default(cuid())
   name               String
   email              String   @unique
+  password           String?
+  emailVerified      Boolean?  @default(false)
   githubUsername     String   @unique
   githubProfile      String?  
   bio                String? 
@@ -161,11 +163,11 @@ model ProjectVote {
   @@unique([userId, projectId])
 }
 
-// 1. Generate the migration SQL and apply it to your database:
-// npx prisma migrate dev --name init
+// 1. Update your database schema (apply changes from schema.prisma):
+// npx prisma migrate dev --name add-password-emailverified
 
-// 2. (Optional) If you want to just create tables without generating a migration history:
-// npx prisma db push
+// 2. Generate the Prisma client (optional, but recommended):
+// npx prisma generate
 
-// After this, re-run your seed script:
+// 3. Run your seed script to insert the dummy data:
 // npx tsx scripts/seed-dummy-data.ts

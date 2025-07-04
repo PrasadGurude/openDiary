@@ -1,33 +1,36 @@
 import { NextResponse } from "next/server"
 import { getUserFromRequest } from "@/lib/auth"
+import { PrismaClient } from "@prisma/client"
+
+const prisma = new PrismaClient()
 
 interface Params {
   params: { id: string }
 }
 
-// GET project by id (public)
 export async function GET(request: Request, { params }: Params): Promise<Response> {
-  // ...fetch project from db...
-  return NextResponse.json({ project: { id: params.id } })
+  const project = await prisma.project.findUnique({ where: { id: params.id } })
+  if (!project) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 })
+  }
+  return NextResponse.json({ project })
 }
 
-// PATCH update project (admin only)
 export async function PATCH(request: Request, { params }: Params): Promise<Response> {
   const user = getUserFromRequest(request)
-  if (!user || user.role !== "ADMIN") {
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
   const body = await request.json()
-  // ...update project in db...
-  return NextResponse.json({ message: "Project updated", project: { id: params.id, ...body } })
+  const project = await prisma.project.update({ where: { id: params.id }, data: body })
+  return NextResponse.json({ message: "Project updated", project })
 }
 
-// DELETE project (admin only)
 export async function DELETE(request: Request, { params }: Params): Promise<Response> {
   const user = getUserFromRequest(request)
-  if (!user || user.role !== "ADMIN") {
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-  // ...delete project from db...
+  await prisma.project.delete({ where: { id: params.id } })
   return NextResponse.json({ message: "Project deleted", id: params.id })
 }

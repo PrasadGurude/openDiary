@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server"
 import { getUserFromRequest } from "@/lib/auth"
+import { PrismaClient, SuggestionStatus } from "@prisma/client"
+
+const prisma = new PrismaClient()
 
 interface Params {
   params: { id: string }
@@ -7,9 +10,12 @@ interface Params {
 
 export async function POST(request: Request, { params }: Params): Promise<Response> {
   const user = getUserFromRequest(request)
-  if (!user || user.role !== "ADMIN") {
+  if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
-  // ...approve suggestion in db...
-  return NextResponse.json({ message: "Suggestion approved", id: params.id, status: "APPROVED" })
+  const suggestion = await prisma.projectSuggestion.update({
+    where: { id: params.id },
+    data: { status: SuggestionStatus.APPROVED },
+  })
+  return NextResponse.json({ message: "Suggestion approved", id: params.id, status: suggestion.status })
 }

@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server"
 import { getUserFromRequest } from "@/lib/auth"
-import { mockProjects } from "@/lib/data"
+import { PrismaClient } from "@prisma/client"
+
+const prisma = new PrismaClient()
 
 // GET all projects (public)
-export async function GET(request: Request): Promise<Response> {
-  // Return all projects from mock data
-  return NextResponse.json({ projects: mockProjects })
+export async function GET(): Promise<Response> {
+  const projects = await prisma.project.findMany()
+  return NextResponse.json({ projects })
 }
 
 // POST create project (auth required)
@@ -15,6 +17,6 @@ export async function POST(request: Request): Promise<Response> {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
   const body = await request.json()
-  // Here you would insert into your DB; for demo, just echo back
-  return NextResponse.json({ message: "Project created", project: body }, { status: 201 })
+  const project = await prisma.project.create({ data: body })
+  return NextResponse.json({ message: "Project created", project }, { status: 201 })
 }
