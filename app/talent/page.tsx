@@ -456,7 +456,18 @@ export default function TalentPage() {
           contributors.map((contributor) => (
             <div key={contributor.id} className="flex justify-center">
               <Card
-                className="group transition-all duration-300 shadow-lg hover:-translate-y-1 dark:shadow-slate-900/30 dark:hover:shadow-slate-900/50 border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 hover:border-blue-300 dark:hover:border-blue-600 w-full h-full flex flex-col"
+                className="group transition-all duration-300 shadow-lg hover:-translate-y-1 dark:shadow-slate-900/30 dark:hover:shadow-slate-900/50 border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 hover:border-blue-300 dark:hover:border-blue-600 w-full h-full flex flex-col cursor-pointer"
+                onClick={(e) => {
+                  // Only navigate if not clicking a button or link
+                  if (
+                    (e.target as HTMLElement).tagName !== "BUTTON" &&
+                    !(e.target as HTMLElement).closest("button") &&
+                    (e.target as HTMLElement).tagName !== "A" &&
+                    !(e.target as HTMLElement).closest("a")
+                  ) {
+                    window.location.href = `/profile/${contributor.githubUsername}`
+                  }
+                }}
               >
                 <CardHeader className="pb-4 flex-1">
                   <div className="flex items-center gap-4 mb-2">
@@ -466,14 +477,15 @@ export default function TalentPage() {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <Link
+                        <a
                           href={contributor.githubProfile}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-lg font-bold text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate group-hover:text-blue-600 dark:group-hover:text-blue-400"
+                          onClick={e => e.stopPropagation()}
                         >
                           {contributor.name}
-                        </Link>
+                        </a>
                         {contributor.verifiedGithub && (
                           <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-medium ml-1">Verified</Badge>
                         )}
@@ -535,35 +547,47 @@ export default function TalentPage() {
                   <div className="flex flex-col gap-2 mt-2">
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
                       <Button asChild size="sm" variant="outline" className="shadow-sm hover:shadow-md transition-all border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 w-full sm:w-auto">
-                        <Link href={contributor.githubProfile} target="_blank" rel="noopener noreferrer">
+                        <a href={contributor.githubProfile} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
                           <Github className="h-4 w-4 mr-1" />
                           GitHub
-                        </Link>
+                        </a>
                       </Button>
                       {contributor.linkedinUrl && (
                         <Button asChild size="sm" variant="outline" className="shadow-sm hover:shadow-md transition-all border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 w-full sm:w-auto">
-                          <Link href={contributor.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                          <a href={contributor.linkedinUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
                             <ExternalLink className="h-4 w-4 mr-1" />
                             LinkedIn
-                          </Link>
+                          </a>
                         </Button>
                       )}
                       {contributor.twitterHandle && (
                         <Button asChild size="sm" variant="outline" className="shadow-sm hover:shadow-md transition-all border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 w-full sm:w-auto">
-                          <Link href={`https://twitter.com/${contributor.twitterHandle.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer">
+                          <a href={`https://twitter.com/${contributor.twitterHandle.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
                             <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 mr-1 text-sky-500" aria-hidden="true"><path d="M22.46 5.924c-.793.352-1.646.59-2.542.697a4.48 4.48 0 0 0 1.965-2.475 8.94 8.94 0 0 1-2.828 1.082A4.48 4.48 0 0 0 16.11 4c-2.48 0-4.49 2.014-4.49 4.495 0 .352.04.695.116 1.022C7.728 9.37 4.1 7.6 1.67 4.98c-.387.664-.61 1.437-.61 2.26 0 1.56.793 2.94 2.003 3.75-.736-.023-1.428-.226-2.034-.563v.057c0 2.18 1.55 4.002 3.604 4.418-.377.104-.775.16-1.186.16-.29 0-.568-.028-.84-.08.57 1.77 2.22 3.06 4.18 3.09A8.98 8.98 0 0 1 2 19.54a12.67 12.67 0 0 0 6.86 2.01c8.23 0 12.74-6.82 12.74-12.74 0-.195-.004-.39-.013-.583.875-.63 1.64-1.42 2.24-2.31z"/></svg>
                             <span>Twitter</span>
-                          </Link>
+                          </a>
                         </Button>
                       )}
                     </div>
-                    <Button
-                      size="sm"
-                      className={`shadow-sm hover:shadow-md transition-all w-full ${followedUsers.has(contributor.id) ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200'}`}
-                      onClick={() => followedUsers.has(contributor.id) ? handleUnfollow(contributor.id) : handleFollow(contributor.id)}
-                    >
-                      {followedUsers.has(contributor.id) ? 'Unfollow' : 'Follow'}
-                    </Button>
+                    <div className="flex gap-2 mt-2">
+                      <Button
+                        size="sm"
+                        className={`shadow-sm hover:shadow-md transition-all w-full ${followedUsers.has(contributor.id) ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200'}`}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          followedUsers.has(contributor.id)
+                            ? handleUnfollow(contributor.id)
+                            : handleFollow(contributor.id)
+                        }}
+                      >
+                        {followedUsers.has(contributor.id) ? 'Unfollow' : 'Follow'}
+                      </Button>
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={`/profile/${contributor.githubUsername}`} onClick={e => { e.stopPropagation(); }}>
+                          View
+                        </a>
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
