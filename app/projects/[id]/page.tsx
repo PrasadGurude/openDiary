@@ -31,6 +31,8 @@ import { LanguageBar } from "@/components/language-bar"
 import { ProjectTags } from "@/components/project-tags"
 import { getProjectById, type Project } from "@/lib/data"
 
+const baseUrl = process.env.BASE_URL || "http://localhost:3000"
+
 export default function ProjectDetailPage() {
   const params = useParams()
   const [project, setProject] = useState<Project | null>(null)
@@ -306,7 +308,7 @@ export default function ProjectDetailPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {githubData.releases.slice(0, 3).map((release) => (
+                    {githubData.releases && githubData.releases.slice(0, 3).map((release:any) => (
                       <div key={release.tagName} className="border-l-2 border-blue-500 pl-3">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-medium text-gray-900 dark:text-slate-100">{release.tagName}</span>
@@ -337,7 +339,7 @@ export default function ProjectDetailPage() {
                     </div>
                     <div className="text-center p-3 bg-slate-100 dark:bg-slate-700/50 rounded">
                       <div className="text-xl font-bold text-gray-900 dark:text-slate-100">
-                        {githubData.branches.length}
+                        {githubData.branches ? githubData.branches.length : 0}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-slate-400">Branches</div>
                     </div>
@@ -385,7 +387,7 @@ export default function ProjectDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {githubData.contributors.map((contributor) => (
+                  {githubData.contributors && githubData.contributors.map((contributor:any) => (
                     <div
                       key={contributor.login}
                       className="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-700/50 rounded-lg"

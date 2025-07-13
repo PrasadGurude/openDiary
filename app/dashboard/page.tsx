@@ -9,8 +9,11 @@ import { Star, GitFork, Bookmark, Users, TrendingUp, Activity, Github } from "lu
 import { getFeaturedProjects, getFeaturedContributors } from "@/lib/data"
 import { ProtectedRoute } from "@/components/protected-route"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 function DashboardContent() {
+  const router = useRouter()
+  const baseUrl = process.env.BASE_URL || "http://localhost:3000"
   const suggestedProjects = getFeaturedProjects(6)
   const followedContributors = getFeaturedContributors(4)
   const bookmarkedProjects = getFeaturedProjects(4)
@@ -91,7 +94,11 @@ function DashboardContent() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {suggestedProjects.map((project) => (
-                  <div key={project.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div
+                    key={project.id}
+                    className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => router.push(`${baseUrl}/projects/${project.id}`)}
+                  >
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <h4 className="font-medium">{project.name}</h4>
@@ -128,11 +135,11 @@ function DashboardContent() {
                         </span>
                       </div>
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" variant="outline" onClick={e => e.stopPropagation()}>
                           <Bookmark className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" asChild>
-                          <Link href={project.githubUrl} target="_blank">
+                        <Button size="sm" asChild onClick={e => { e.stopPropagation(); }}>
+                          <Link href={`${baseUrl}/projects/${project.id}`}>
                             View
                           </Link>
                         </Button>
@@ -154,7 +161,11 @@ function DashboardContent() {
             <CardContent>
               <div className="space-y-4">
                 {bookmarkedProjects.map((project) => (
-                  <div key={project.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={project.id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => router.push(`${baseUrl}/projects/${project.id}`)}
+                  >
                     <div className="flex-1">
                       <h4 className="font-medium">{project.name}</h4>
                       <p className="text-sm text-gray-600 line-clamp-1">{project.description}</p>
@@ -170,11 +181,11 @@ function DashboardContent() {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={e => {e.preventDefault(); e.stopPropagation(); /* handle remove */}}>
                         Remove
                       </Button>
-                      <Button size="sm" asChild>
-                        <Link href={project.githubUrl} target="_blank">
+                      <Button size="sm" asChild onClick={e => { e.stopPropagation(); }}>
+                        <Link href={`${baseUrl}/projects/${project.id}`}>
                           <Github className="h-4 w-4" />
                         </Link>
                       </Button>
