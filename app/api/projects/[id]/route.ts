@@ -9,7 +9,10 @@ interface Params {
 }
 
 export async function GET(request: Request, { params }: Params): Promise<Response> {
-  const project = await prisma.project.findUnique({ where: { id: params.id } })
+  const project = await prisma.project.findUnique({
+    where: { id: params.id },
+    include: { tags: true, bookmarks: true, votes: true },
+  })
   if (!project) {
     return NextResponse.json({ error: "Not found" }, { status: 404 })
   }

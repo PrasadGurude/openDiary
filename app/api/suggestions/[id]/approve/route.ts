@@ -17,5 +17,6 @@ export async function POST(request: Request, { params }: Params): Promise<Respon
     where: { id: params.id },
     data: { status: SuggestionStatus.APPROVED },
   })
+  // Optionally, create a Project from the suggestion here
   return NextResponse.json({ message: "Suggestion approved", id: params.id, status: suggestion.status })
 }

@@ -1,222 +1,203 @@
-/**
- * Script to seed dummy users, projects, bookmarks, follows, votes, and suggestions into the database using Prisma.
- * Usage: `npx ts-node --loader ts-node/esm scripts/seed-dummy-data.ts`
- */
+// Seed script without using faker
 
 import { PrismaClient, TagType, VoteType, SuggestionStatus } from "@prisma/client"
-import {
-  mockUsers,
-  mockProjects,
-  mockBookmarks,
-  mockVotes,
-  mockUserFollows,
-  mockSuggestions,
-} from "../lib/data"
 
 const prisma = new PrismaClient()
 
-async function main() {
-  // Seed Users
-  for (const user of mockUsers) {
-    try {
-      await prisma.user.upsert({
-        where: { email: user.email },
-        update: {},
-        create: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          githubUsername: user.githubUsername,
-          githubProfile: user.githubProfile ?? undefined,
-          bio: user.bio ?? undefined,
-          avatarUrl: user.avatarUrl ?? undefined,
-          skills: user.skills,
-          experience: user.experience ?? undefined,
-          interests: user.interests,
-          contributionScore: user.contributionScore,
-          totalCommits: user.totalCommits,
-          totalPRs: user.totalPRs,
-          totalStars: user.totalStars,
-          githubFollowers: user.githubFollowers,
-          topLanguages: user.topLanguages,
-          verifiedGithub: user.verifiedGithub,
-          publicProfile: user.publicProfile,
-          isDiscoverable: user.isDiscoverable,
-          twitterHandle: user.twitterHandle ?? undefined,
-          linkedinUrl: user.linkedinUrl ?? undefined,
-          mobile: user.mobile ?? undefined,
-          createdAt: new Date(user.createdAt),
-          updatedAt: new Date(user.updatedAt),
-        },
-      })
-      console.log(`Seeded user: ${user.email}`)
-    } catch (e) {
-      console.error(`Failed to seed user: ${user.email}`, e)
-    }
-  }
+const ALL_SKILLS = ["React", "Vue", "Svelte", "Go", "Rust", "TypeScript", "Python", "Node.js", "Java", "C++"]
+const ALL_INTERESTS = ["frontend", "backend", "devops", "ml", "blockchain", "ai", "design", "testing"]
+const ALL_LANGUAGES = ["Go", "Rust", "TypeScript", "JavaScript", "Python", "Java", "C#", "Ruby"]
+const ALL_TOPICS = ["web", "cli", "api", "data", "tooling", "cloud", "auth", "ci/cd", "graphql", "db"]
+const TAGS = Object.values(TagType)
 
-  // Seed Projects
-  for (const project of mockProjects) {
-    try {
-      await prisma.project.upsert({
-        where: { githubUrl: project.githubUrl },
-        update: {},
-        create: {
-          id: project.id,
-          name: project.name,
-          fullName: project.fullName,
-          githubUrl: project.githubUrl,
-          liveLink: project.liveLink ?? undefined,
-          description: project.description ?? undefined,
-          stars: project.stars,
-          forks: project.forks,
-          owner: project.owner ?? undefined,
-          license: project.license ?? undefined,
-          topics: project.topics,
-          languages: project.languages ?? undefined,
-          visibility: project.visibility,
-          autoSynced: project.autoSynced,
-          lastSyncedAt: project.lastSyncedAt ? new Date(project.lastSyncedAt) : undefined,
-          approved: project.approved,
-          upvotes: project.upvotes,
-          downvotes: project.downvotes,
-          createdAt: new Date(project.createdAt),
-          updatedAt: new Date(project.updatedAt),
-        },
-      })
-      // Seed Project Tags
-      if (project.tags && project.tags.length > 0) {
-        for (const tag of project.tags) {
-          await prisma.projectTag.upsert({
-            where: {
-              projectId_type: {
-                projectId: project.id,
-                type: tag.type as TagType,
-              },
-            },
-            update: {},
-            create: {
-              id: tag.id,
-              projectId: project.id,
-              type: tag.type as TagType,
-              sourceUrl: tag.sourceUrl,
-              verified: tag.verified,
-            },
-          })
-        }
-      }
-      console.log(`Seeded project: ${project.name}`)
-    } catch (e) {
-      console.error(`Failed to seed project: ${project.name}`, e)
-    }
-  }
-
-  // Seed Bookmarks
-  for (const bookmark of mockBookmarks) {
-    try {
-      await prisma.bookmark.upsert({
-        where: { userId_projectId: { userId: bookmark.userId, projectId: bookmark.projectId } },
-        update: {},
-        create: {
-          id: bookmark.id,
-          userId: bookmark.userId,
-          projectId: bookmark.projectId,
-          createdAt: new Date(bookmark.createdAt),
-          updatedAt: new Date(bookmark.createdAt),
-        },
-      })
-      console.log(`Seeded bookmark: user ${bookmark.userId} -> project ${bookmark.projectId}`)
-    } catch (e) {
-      console.error(`Failed to seed bookmark: user ${bookmark.userId} -> project ${bookmark.projectId}`, e)
-    }
-  }
-
-  // Seed Votes
-  for (const vote of mockVotes) {
-    try {
-      await prisma.projectVote.upsert({
-        where: { userId_projectId: { userId: vote.userId, projectId: vote.projectId } },
-        update: {},
-        create: {
-          id: vote.id,
-          userId: vote.userId,
-          projectId: vote.projectId,
-          type: vote.type as VoteType,
-          createdAt: new Date(vote.createdAt),
-          updatedAt: new Date(vote.createdAt),
-        },
-      })
-      console.log(`Seeded vote: user ${vote.userId} -> project ${vote.projectId}`)
-    } catch (e) {
-      console.error(`Failed to seed vote: user ${vote.userId} -> project ${vote.projectId}`, e)
-    }
-  }
-
-  // Seed User Follows
-  for (const follow of mockUserFollows) {
-    try {
-      await prisma.userFollow.upsert({
-        where: { followerId_followingId: { followerId: follow.followerId, followingId: follow.followingId } },
-        update: {},
-        create: {
-          id: follow.id,
-          followerId: follow.followerId,
-          followingId: follow.followingId,
-        },
-      })
-      console.log(`Seeded follow: ${follow.followerId} -> ${follow.followingId}`)
-    } catch (e) {
-      console.error(`Failed to seed follow: ${follow.followerId} -> ${follow.followingId}`, e)
-    }
-  }
-
-  // Seed Project Suggestions and SuggestedTags
-  for (const suggestion of mockSuggestions) {
-    try {
-      await prisma.projectSuggestion.upsert({
-        where: { id: suggestion.id },
-        update: {},
-        create: {
-          id: suggestion.id,
-          githubUrl: suggestion.githubUrl,
-          notes: suggestion.notes ?? undefined,
-          submittedById: suggestion.submittedById,
-          status: suggestion.status as SuggestionStatus,
-          createdAt: new Date(suggestion.createdAt),
-          updatedAt: new Date(suggestion.updatedAt),
-        },
-      })
-      // Seed SuggestedTags for this suggestion
-      if (suggestion.suggestedTags && suggestion.suggestedTags.length > 0) {
-        for (const tag of suggestion.suggestedTags) {
-          await prisma.suggestedTag.upsert({
-            where: {
-              id: tag.id,
-            },
-            update: {},
-            create: {
-              id: tag.id,
-              suggestionId: suggestion.id,
-              type: tag.type as TagType,
-              sourceUrl: tag.sourceUrl,
-              verified: tag.verified,
-            },
-          })
-        }
-      }
-      console.log(`Seeded suggestion: ${suggestion.id}`)
-    } catch (e) {
-      console.error(`Failed to seed suggestion: ${suggestion.id}`, e)
-    }
-  }
+function getRandomElements<T>(arr: T[], min = 2, max = 4): T[] {
+  const shuffled = [...arr].sort(() => 0.5 - Math.random())
+  return shuffled.slice(0, Math.floor(Math.random() * (max - min + 1)) + min)
 }
 
-main()
-  .then(() => {
-    console.log("Seeding complete.")
-    return prisma.$disconnect()
-  })
-  .catch((err) => {
-    console.error("Seeding failed:", err)
-    return prisma.$disconnect().then(() => process.exit(1))
-  })
+function getUniqueLanguages() {
+  const langs = getRandomElements(ALL_LANGUAGES, 2, 2)
+  return Object.fromEntries(langs.map(lang => [lang, Math.floor(Math.random() * 50 + 10)]))
+}
+
+function getRandomDatePast(): Date {
+  const start = new Date("2022-01-01")
+  const end = new Date("2023-12-31")
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
+}
+
+function getRandomDateRecent(after: Date): Date {
+  const now = new Date()
+  return new Date(after.getTime() + Math.random() * (now.getTime() - after.getTime()))
+}
+
+async function main() {
+  const users = []
+  for (let i = 0; i < 45; i++) {
+    const username = `user${i}`
+    const createdAt = getRandomDatePast()
+    const updatedAt = getRandomDateRecent(createdAt)
+    const user = await prisma.user.upsert({
+      where: { email: `user${i}@example.com` },
+      update: {},
+      create: {
+        id: `usr-${i}`,
+        name: `User ${i}`,
+        email: `user${i}@example.com`,
+        emailVerified: true,
+        githubUsername: `user${i}`,
+        githubProfile: `https://github.com/user${i}`,
+        bio: `Bio of user ${i}`,
+        avatarUrl: `https://api.multiavatar.com/user${i}.svg`,
+        skills: getRandomElements(ALL_SKILLS),
+        experience: `${Math.floor(Math.random() * 10 + 1)} years`,
+        interests: getRandomElements(ALL_INTERESTS),
+        contributionScore: Math.floor(Math.random() * 1000),
+        totalCommits: Math.floor(Math.random() * 9950 + 50),
+        totalPRs: Math.floor(Math.random() * 300 + 1),
+        totalStars: Math.floor(Math.random() * 5000),
+        githubFollowers: Math.floor(Math.random() * 2000),
+        topLanguages: getRandomElements(ALL_LANGUAGES),
+        verifiedGithub: true,
+        publicProfile: true,
+        isDiscoverable: true,
+        twitterHandle: `@user${i}`,
+        linkedinUrl: `https://linkedin.com/in/user${i}`,
+        mobile: `9${Math.floor(Math.random() * 1000000000).toString().padStart(9, '0')}`,
+        createdAt,
+        updatedAt,
+      },
+    })
+    users.push(user)
+  }
+
+  const suggestions = []
+  for (let i = 0; i < 65; i++) {
+    const status = i % 3 === 0 ? SuggestionStatus.REJECTED : i % 2 === 0 ? SuggestionStatus.PENDING : SuggestionStatus.APPROVED
+    const user = users[i % users.length]
+    const createdAt = getRandomDatePast()
+    const updatedAt = getRandomDateRecent(createdAt)
+    const suggestion = await prisma.projectSuggestion.upsert({
+      where: { id: `sugg-${i}` },
+      update: {},
+      create: {
+        id: `sugg-${i}`,
+        githubUrl: `https://github.com/example/project-${i}`,
+        notes: `Suggestion notes ${i}`,
+        submittedById: user.id,
+        status,
+        createdAt,
+        updatedAt,
+        suggestedTags: {
+          create: getRandomElements(TAGS, 2, 2).map(type => ({
+            type,
+            sourceUrl: `https://source.com/${type.toLowerCase()}`,
+            verified: Math.random() > 0.5,
+          }))
+        },
+      }
+    })
+    suggestions.push(suggestion)
+  }
+
+  const approvedSuggestions = suggestions.filter(s => s.status === SuggestionStatus.APPROVED)
+  const projects = []
+  for (let i = 0; i < 55; i++) {
+    const sug = approvedSuggestions[i % approvedSuggestions.length]
+    const createdAt = getRandomDatePast()
+    const updatedAt = getRandomDateRecent(createdAt)
+
+    const existing = await prisma.project.findUnique({ where: { githubUrl: sug.githubUrl } })
+    if (existing) continue
+
+    const project = await prisma.project.create({
+      data: {
+        id: `prj-${i}`,
+        name: `Project ${i}`,
+        fullName: `example/project-${i}`,
+        githubUrl: sug.githubUrl,
+        liveLink: `https://live.com/project-${i}`,
+        description: `This is the project ${i} description.`,
+        stars: Math.floor(Math.random() * 5000),
+        forks: Math.floor(Math.random() * 500 + 1),
+        owner: users[i % users.length].githubUsername,
+        license: ["MIT", "Apache-2.0", "GPL-3.0", "ISC"][i % 4],
+        topics: getRandomElements(ALL_TOPICS),
+        languages: getUniqueLanguages(),
+        visibility: true,
+        autoSynced: Math.random() > 0.5,
+        lastSyncedAt: getRandomDateRecent(createdAt),
+        approved: true,
+        upvotes: Math.floor(Math.random() * 300),
+        downvotes: Math.floor(Math.random() * 50),
+        createdAt,
+        updatedAt,
+        suggestionId: sug.id,
+        tags: {
+          create: getRandomElements(TAGS, 2, 2).map(type => ({
+            type,
+            sourceUrl: `https://source.com/${type.toLowerCase()}`,
+            verified: true,
+          }))
+        }
+      },
+    })
+    projects.push(project)
+  }
+
+  const usedBookmarks = new Set<string>()
+  const usedVotes = new Set<string>()
+
+  for (const user of users) {
+    const chosen = getRandomElements(projects, 4, 7)
+    for (const project of chosen) {
+      const key = `${user.id}-${project.id}`
+      const createdAt = getRandomDatePast()
+
+      if (!usedBookmarks.has(key)) {
+        await prisma.bookmark.create({
+          data: {
+            userId: user.id,
+            projectId: project.id,
+            createdAt,
+            updatedAt: getRandomDateRecent(createdAt),
+          },
+        })
+        usedBookmarks.add(key)
+      }
+
+      if (!usedVotes.has(key)) {
+        await prisma.projectVote.create({
+          data: {
+            userId: user.id,
+            projectId: project.id,
+            type: Math.random() > 0.5 ? VoteType.UPVOTE : VoteType.DOWNVOTE,
+            createdAt,
+            updatedAt: getRandomDateRecent(createdAt),
+          },
+        })
+        usedVotes.add(key)
+      }
+    }
+  }
+
+  for (let i = 0; i < users.length; i++) {
+    const follower = users[i]
+    const followees = getRandomElements(users.filter((_, j) => j !== i), 2, 5)
+    for (const followee of followees) {
+      await prisma.userFollow.upsert({
+        where: { followerId_followingId: { followerId: follower.id, followingId: followee.id } },
+        update: {},
+        create: {
+          id: `follow-${follower.id}-${followee.id}`,
+          followerId: follower.id,
+          followingId: followee.id,
+        },
+      })
+    }
+  }
+
+  console.log("✅ Seeding complete.")
+}
+
+main().catch(console.error).finally(() => prisma.$disconnect())

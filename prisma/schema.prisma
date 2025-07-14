@@ -80,30 +80,34 @@ model UserFollow {
 }
 
 model Project {
-  id           String   @id @default(cuid())
-  name         String
-  fullName     String   @unique
-  githubUrl    String   @unique
-  liveLink     String?  
-  description  String?  
-  stars        Int      @default(0)
-  forks        Int      @default(0)
-  owner        String?
-  license      String?  
-  topics       String[]
-  languages    Json?
-  visibility   Boolean  @default(true)
-  autoSynced   Boolean  @default(false)
-  lastSyncedAt DateTime?
-  approved     Boolean  @default(false)
-  upvotes      Int      @default(0)
-  downvotes    Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String   @id @default(cuid())
+  name           String
+  fullName       String   @unique
+  githubUrl      String   @unique
+  liveLink       String?  
+  description    String?  
+  stars          Int      @default(0)
+  forks          Int      @default(0)
+  owner          String?
+  license        String?  
+  topics         String[]
+  languages      Json?
+  visibility     Boolean  @default(true)
+  autoSynced     Boolean  @default(false)
+  lastSyncedAt   DateTime?
+  approved       Boolean  @default(false)
+  upvotes        Int      @default(0)
+  downvotes      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  tags         ProjectTag[]
-  bookmarks    Bookmark[]
-  votes        ProjectVote[]
+  // NEW: Link to approved suggestion
+  suggestionId   String   @unique
+  suggestion     ProjectSuggestion @relation(fields: [suggestionId], references: [id])
+
+  tags           ProjectTag[]
+  bookmarks      Bookmark[]
+  votes          ProjectVote[]
 }
 
 model ProjectTag {
@@ -127,6 +131,9 @@ model ProjectSuggestion {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   suggestedTags   SuggestedTag[]
+
+  // Backward relation to Project (only if status = APPROVED)
+  project         Project?
 }
 
 model SuggestedTag {
@@ -162,6 +169,7 @@ model ProjectVote {
 
   @@unique([userId, projectId])
 }
+
 
 // 1. Update your database schema (apply changes from schema.prisma):
 // npx prisma migrate dev --name add-password-emailverified
